@@ -41,11 +41,11 @@ class App():
 
         print(w,h)
 
-        self.main_cont = Frame(self.root, width=w, height=h, borderwidth=1, relief=SOLID)
+        self.main_cont = Frame(self.root, width=w, height=h)
         self.main_cont.pack(fill=BOTH)
-        self.head_frame = Frame(self.main_cont, width=w, height=h, borderwidth=1, relief=SOLID)
+        self.head_frame = Frame(self.main_cont, width=w, height=h)
         self.head_frame.pack(anchor=E, fill=X)
-        self.main_frame = Frame(self.main_cont, width=w, height=h, borderwidth=1, relief=SOLID)
+        self.main_frame = Frame(self.main_cont, width=w, height=h)
         self.main_frame.pack(anchor=CENTER)
         
         Button(self.head_frame, text="Выход", command=self.root.destroy, width=10, height=2).pack(anchor=E)
@@ -180,9 +180,6 @@ class App():
         self.acc_menu.add_command(label=f"{self.user_fio}")
         self.acc_menu.add_command(label="Выйти из аккаунта", command=self.back_func)
         self.acc_menu.add_command(label="Выйти из приложения", command=self.root.destroy)
-
-        Entry(search_frame, name="search_line", font=('Arial 22')).grid(row=0, column=0, columnspan=4, pady=15)
-        Button(search_frame, text="Поиск", name = "search_button", width=10, height=2).grid(row=0, column=4)
         
         Button(request_frame, text="Подать заявку", name="gg", width=40, height=3, command=self.new_request_screen).grid(row=0, column=0, pady=30)
         Button(request_frame, text="Мои заявки", name="my_request", width=40, height=3, command=self.user_request_screen).grid(row=0, column=1)
@@ -199,7 +196,7 @@ class App():
 
         self.date = datetime.date.today()
 
-        request_frame = Frame(self.main_frame, name="request_screen_frame", borderwidth=1, relief=SOLID)
+        request_frame = Frame(self.main_frame, name="request_screen_frame")
         request_frame.pack()
 
         back_button = Button(self.head_frame, text="Назад", command=self.account_screen, width=10, height=2)
@@ -266,11 +263,35 @@ class App():
 
             for i in request_data:
                 tree.insert("", END, values=i)
+
             tree.pack()
+
+        Button(self.main_frame, name="edit_button", text="Редактировать", command=self.edit_request).pack()
     
     def edit_request(self):
-        self.new_request_screen()
-        db.update_values()
+        edit_frame = Frame(self.main_frame, name="edit_frame")
+        edit_frame.pack()
+
+        equipment_list = ["ПК","Ноутбук","Телефон"]
+        defect_list = ["a","b", "c"]
+
+        get_value = self.main_frame.children.get("edit_frame")
+        queipment_value = get_value.children.get("edit_equipment_combobox").get()
+        defect_value = get_value.children.get("edit_defect_type_combobox").get()
+        description_value = get_value.children.get("edit_defect_description").get()
+
+        Label(edit_frame, name="edit_equipment_type_label", text="Тип обрудования:", font=('Arial 14')).grid(row=2, column=0, sticky=W)
+        ttk.Combobox(edit_frame, name="edit_equipment_combobox", values=equipment_list, state="readonly", width=40, font=('Arial 14')).grid(row=3, column=0, sticky=W)
+
+        Label(edit_frame, name="edit_defect_type_label", text="Тип неисправности:", font=("Arial 14")).grid(row=4, column=0, sticky=W)
+        ttk.Combobox(edit_frame, name="edit_defect_type_combobox", values=defect_list, state="readonly", width=40, font=('Arial 14')).grid(row=5, column=0, sticky=W)
+
+        Label(edit_frame, name="edit_defect_description_label", text="Описание проблемы:", font=("Arial 14")).grid(row=6, column=0, sticky=W)
+        Text(edit_frame, name="edit_defect_description", width=45, height=8, wrap="word", font=("Arial 14")).grid(row=7, column=0, sticky=W)
+
+        Button(self.main_frame, name="edit_button", text="Редактировать").pack()
+
+        
 
     def run(self):
         self.root.mainloop()
