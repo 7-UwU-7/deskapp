@@ -264,21 +264,19 @@ class App():
             for i in request_data:
                 tree.insert("", END, values=i)
 
+            tree.bind("<<TreeviewSelect>>", self.edit_request)
+
             tree.pack()
 
         Button(self.main_frame, name="edit_button", text="Редактировать", command=self.edit_request).pack()
     
-    def edit_request(self):
+    def edit_request(self, event):
+        print(event )
         edit_frame = Frame(self.main_frame, name="edit_frame")
         edit_frame.pack()
 
         equipment_list = ["ПК","Ноутбук","Телефон"]
         defect_list = ["a","b", "c"]
-
-        get_value = self.main_frame.children.get("edit_frame")
-        queipment_value = get_value.children.get("edit_equipment_combobox").get()
-        defect_value = get_value.children.get("edit_defect_type_combobox").get()
-        description_value = get_value.children.get("edit_defect_description").get()
 
         Label(edit_frame, name="edit_equipment_type_label", text="Тип обрудования:", font=('Arial 14')).grid(row=2, column=0, sticky=W)
         ttk.Combobox(edit_frame, name="edit_equipment_combobox", values=equipment_list, state="readonly", width=40, font=('Arial 14')).grid(row=3, column=0, sticky=W)
@@ -291,7 +289,10 @@ class App():
 
         Button(self.main_frame, name="edit_button", text="Редактировать").pack()
 
-        
+        get_value = self.main_frame.children.get("edit_frame")
+        queipment_value = get_value.children.get("edit_equipment_combobox",{}).get()
+        defect_value = get_value.children.get("edit_defect_type_combobox",{}).get()
+        description_value = get_value.children.get("defect_description",{}).get(1.0, 'end-1c')
 
     def run(self):
         self.root.mainloop()
