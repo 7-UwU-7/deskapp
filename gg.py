@@ -13,8 +13,8 @@ class App():
         
         root = Tk()
         root.title("Приложение на Tkinter")
-        root.geometry("1920x1080")
-        root.attributes("-fullscreen", True)
+        root.geometry("1280x720")
+        # root.attributes("-fullscreen", True)
 
         self.root= root
     
@@ -256,21 +256,18 @@ class App():
         else:
             columns = ("1","2","3","4","5")
             columns_text = ("Номер заявки","Дата","Тип оборудования","Тип неисправности","Описание проблемы")
-            tree = ttk.Treeview(user_request_frame, show="headings", columns=columns)
+            self.tree = ttk.Treeview(user_request_frame, show="headings", columns=columns)
 
             for i in zip(columns, columns_text):
-                tree.heading(i[0], text=i[1])
+                self.tree.heading(i[0], text=i[1])
 
             for i in request_data:
-                tree.insert("", END, values=i)
+                self.tree.insert("", END, values=i)
 
-            tree.bind("<<TreeviewSelect>>", self.edit_request)
-
-            tree.pack()
-
-        Button(self.main_frame, name="edit_button", text="Редактировать", command=self.edit_request).pack()
+            self.tree.bind("<<TreeviewSelect>>", self.edit_request_screen)
+            self.tree.pack()
     
-    def edit_request(self, event):
+    def edit_request_screen(self, event):
         print(event )
         edit_frame = Frame(self.main_frame, name="edit_frame")
         edit_frame.pack()
@@ -287,12 +284,20 @@ class App():
         Label(edit_frame, name="edit_defect_description_label", text="Описание проблемы:", font=("Arial 14")).grid(row=6, column=0, sticky=W)
         Text(edit_frame, name="edit_defect_description", width=45, height=8, wrap="word", font=("Arial 14")).grid(row=7, column=0, sticky=W)
 
-        Button(self.main_frame, name="edit_button", text="Редактировать").pack()
+        Button(self.main_frame, name="edit_button", text="Редактировать", command=self.edit_request).pack()
+
+    def edit_request(self):
 
         get_value = self.main_frame.children.get("edit_frame")
         queipment_value = get_value.children.get("edit_equipment_combobox",{}).get()
         defect_value = get_value.children.get("edit_defect_type_combobox",{}).get()
-        description_value = get_value.children.get("defect_description",{}).get(1.0, 'end-1c')
+        description_value = get_value.children.get("edit_defect_description",{}).get(1.0, 'end-1c')
+
+        curItem = self.tree.focus()
+        if curItem:
+            request_id = self.tree.item(curItem)["values"][0]
+
+        db.update_values(request_id, queipment_value, defect_value, description_value)
 
     def run(self):
         self.root.mainloop()

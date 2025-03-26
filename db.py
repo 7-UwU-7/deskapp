@@ -109,7 +109,11 @@ def request_from_db(client):
     request_data = cur.execute(f'SELECT * FROM Request WHERE client = "{client}"').fetchall()
     return request_data
 
-def update_values(id, equipment, defect, description):
+def update_values(req_id, equipment, defect, description):
     cur.execute(f"""
-    UPDATE Request SET equipment = {equipment}, defect={defect}, description={description} WHERE id = {id}
+    UPDATE Request SET equipment = "{equipment}", defect="{defect}", description="{description}" WHERE id = {req_id}
     """)
+    data_base.commit()
+    q = cur.execute(f"""SELECT * from Request WHERE id = "{req_id}" 
+                """).fetchall()
+    print(q) 
