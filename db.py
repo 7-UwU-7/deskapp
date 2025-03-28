@@ -7,10 +7,7 @@ cur.executescript("""
 BEGIN;
 CREATE TABLE
 IF NOT EXISTS
-User(id INTEGER PRIMARY KEY, login TEXT, password TEXT, fio TEXT);
-CREATE TABLE
-IF NOT EXISTS
-Admin(id INTEGER PRIMARY KEY, login TEXT, password TEXT);
+User(id INTEGER PRIMARY KEY, login TEXT, password TEXT, fio TEXT, role TEXT);
 CREATE TABLE
 IF NOT EXISTS
 Request(id INTEGER PRIMARY KEY, date DATE, equipment TEXT, defect TEXT, description, client TEXT);
@@ -58,8 +55,6 @@ def check_and_get_user(login):
     else:
         return None
 
-
-
 def search_user_for_login(login, password):
     user = cur.execute(f'SELECT id from User WHERE login="{login}" AND password="{password}"').fetchone()
     if user:
@@ -87,23 +82,13 @@ def search_user_for_fio(login, password, fio):
     else:
         return None
 
-def search_admin_for_login(login, password):
-    user = cur.execute(f'SELECT id from Admin WHERE login="{login}" AND password="{password}"').fetchone()
-    if user:
-        return user[0]
-    else:
-        return None
 
 def check_log_in():
     log_in_values = cur.execute(f"""
     SELECT login, password
     FROM User
     """).fetchall()
-    chmo = cur.execute(f"""
-    SELECT login, password
-    FROM Admin
-    """).fetchall()
-    print(log_in_values, chmo)
+    print(log_in_values)
 
 def request_from_db(client):
     request_data = cur.execute(f'SELECT * FROM Request WHERE client = "{client}"').fetchall()
@@ -116,4 +101,5 @@ def update_values(req_id, equipment, defect, description):
     data_base.commit()
     q = cur.execute(f"""SELECT * from Request WHERE id = "{req_id}" 
                 """).fetchall()
-    print(q) 
+    print(q)
+
